@@ -1,0 +1,185 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "id": "54e8e85e",
+      "metadata": {},
+      "source": [
+        "# SEC plot workflow: batch SVG and web GUI\n",
+        "\n",
+        "This notebook documents the two ways this repo produces Arcadia-styled SEC (size-exclusion chromatography) plots:\n",
+        "\n",
+        "1. **Batch SVG generation** — Python script reading Excel files from a `data/` folder and writing SVGs to `output/`.\n",
+        "2. **Web GUI** — Flask backend plus HTML front end for uploading CSV, editing legend text, and generating SVG.\n",
+        "\n",
+        "Organization and documentation use relative paths only, clear structure, and no spaces in directory names.\n",
+        "\n",
+        "**Data:** Place Excel files (`.xlsx`) with a **Data** sheet (same layout as described in the README) in the **`data/`** folder. The batch script reads from `data/` and writes to `output/`."
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "## 1. Batch SVG generation (local script)\n",
+        "\n",
+        "The script `plot_sec_to_svg.py`:\n",
+        "- Reads all `.xlsx` files from a single input directory (here: `data/`).\n",
+        "- For each file, loads the **Data** sheet and detects column pairs (Volume, signal), stopping at `Pk_*` columns.\n",
+        "- Builds series with peak volumes, applies Arcadia colors and legend order (No Treatment, TCEP, EDTA, TCEP + EDTA), and renders one SVG per file.\n",
+        "- Writes SVGs to an output directory (here: `output/`).\n",
+        "\n",
+        "Below we run the same logic from the notebook using relative paths so the repo is self-contained and path-agnostic."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "from pathlib import Path\n",
+        "import sys\n",
+        "\n",
+        "# Run from repo root so plot_sec_to_svg is importable; data/ and output/ are relative to cwd.\n",
+        "REPO_ROOT = Path.cwd()\n",
+        "if str(REPO_ROOT) not in sys.path:\n",
+        "    sys.path.insert(0, str(REPO_ROOT))\n",
+        "\n",
+        "DATA_DIR = REPO_ROOT / \"data\"\n",
+        "OUTPUT_DIR = REPO_ROOT / \"output\"\n",
+        "OUTPUT_DIR.mkdir(parents=True, exist_ok=True)\n",
+        "\n",
+        "import pandas as pd\n",
+        "from plot_sec_to_svg import get_series_pairs, render_sec_svg\n",
+        "\n",
+        "xlsx_files = sorted(DATA_DIR.glob(\"*.xlsx\"))\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Single-file example:** Load one Excel file from `data/`, get series pairs from the Data sheet, render to SVG, and save to `output/`."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "id": "39271e37",
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "if not xlsx_files:\n",
+        "    print(\"No .xlsx files in data/. Add Excel files (with a 'Data' sheet) to run the batch.\")\n",
+        "else:\n",
+        "    path = xlsx_files[0]\n",
+        "    df = pd.read_excel(path, sheet_name=\"Data\", header=0)\n",
+        "    pairs = get_series_pairs(df)\n",
+        "    title = path.stem.replace(\"_\", \" \").replace(\" (2)\", \"\").replace(\" (27)\", \"\")\n",
+        "    svg = render_sec_svg(pairs, title)\n",
+        "    out_path = OUTPUT_DIR / (path.stem + \".svg\")\n",
+        "    out_path.write_text(svg, encoding=\"utf-8\")\n",
+        "    print(f\"Saved {out_path.name}\")\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "**Batch run:** Loop over all `.xlsx` files in `data/` and write one SVG per file (same behavior as running `python plot_sec_to_svg.py` when the script is configured to use `data/` and `output/`)."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "for excel_path in xlsx_files:\n",
+        "    xl = pd.ExcelFile(excel_path)\n",
+        "    if \"Data\" not in xl.sheet_names:\n",
+        "        print(f\"  Skip {excel_path.name}: no 'Data' sheet\")\n",
+        "        continue\n",
+        "    df = pd.read_excel(excel_path, sheet_name=\"Data\", header=0)\n",
+        "    pairs = get_series_pairs(df)\n",
+        "    if not pairs:\n",
+        "        print(f\"  Skip {excel_path.name}: no series found\")\n",
+        "        continue\n",
+        "    title = excel_path.stem.replace(\"_\", \" \").replace(\" (2)\", \"\").replace(\" (27)\", \"\")\n",
+        "    svg = render_sec_svg(pairs, title)\n",
+        "    out_path = OUTPUT_DIR / (excel_path.stem + \".svg\")\n",
+        "    out_path.write_text(svg, encoding=\"utf-8\")\n",
+        "    print(f\"  Saved {out_path.name}\")\n",
+        "print(\"Done.\")\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "## 2. Web GUI implementation\n",
+        "\n",
+        "The web UI lets users upload a CSV (same structure as the Data sheet), adjust plot title and legend text, and download an SVG. It has two parts:\n",
+        "\n",
+        "### 2.1 Backend (Flask)\n",
+        "\n",
+        "- **`app.py`** serves the single-page HTML and two API endpoints:\n",
+        "  - `POST /api/suggest-labels`: accepts `csv_text` and `series` (column mapping); returns `legend_title` and `labels` as they would appear on the figure (so the user can edit them).\n",
+        "  - `POST /api/plot`: accepts `csv_text`, `series`, `title`, and optional `legend_title` and `legend_labels`; returns the SVG string.\n",
+        "- Plotting is done by `plot_sec_to_svg.render_sec_svg()` and related helpers; `matplotlib` is set to the `Agg` backend so it runs safely in a request thread (no GUI)."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {},
+      "outputs": [],
+      "source": [
+        "# Key imports and routes (from app.py). Do not run Flask inside the notebook in production.\n",
+        "# To run the GUI: from the repo root run \"python app.py\", then open http://127.0.0.1:5000\n",
+        "\n",
+        "import io\n",
+        "import pandas as pd\n",
+        "from plot_sec_to_svg import pairs_from_mapping, render_sec_svg, suggest_legend\n",
+        "\n",
+        "# Example: build pairs from CSV text and column mapping, then get suggested legend\n",
+        "def demo_suggest(csv_text: str, series: list) -> tuple:\n",
+        "    df = pd.read_csv(io.StringIO(csv_text), header=0)\n",
+        "    pairs = pairs_from_mapping(df, series)\n",
+        "    return suggest_legend(pairs) if pairs else (\" - Condition\", [])\n",
+        "\n",
+        "# series = [{\"x_col\": 0, \"y_col\": 1, \"name\": \"BSA_standards\"}, ...]\n",
+        "# legend_title, labels = demo_suggest(csv_text, series)\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### 2.2 Front end (HTML/JS)\n",
+        "\n",
+        "- **`sec_plot_gui.html`** is a single page: file input for CSV, table for legend title and legend lines, and a \"Generate SVG\" button.\n",
+        "- On file load, the page parses the CSV (e.g. with Papa Parse), auto-detects column pairs (Volume + signal, stopping at `Pk_*`), then calls `/api/suggest-labels` to pre-fill the legend title and legend line fields with the same text that would appear on the figure.\n",
+        "- The user edits those fields as needed; on \"Generate SVG\", the page sends `csv_text`, `series`, `title`, `legend_title`, and `legend_labels` to `/api/plot` and displays the returned SVG with a download link.\n",
+        "\n",
+        "No server-side file storage: all data stays in the browser and in the request/response. The `data/` folder is only for the batch Excel workflow above."
+      ]
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python",
+      "version": "3.9.0"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
