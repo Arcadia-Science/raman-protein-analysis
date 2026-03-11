@@ -18,6 +18,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
+    "arcadia-pycolor>=0.7.2",
+    "nbformat>=5.10.4",
     "pandas>=1.5.0",
     "plotly>=5.0.0",
     "ramanspy>=0.2.0",
