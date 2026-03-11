@@ -1,0 +1,136 @@
+ID,Name,Group ID
+emptywell/Default.csv,emptywell/Default,99
+2025-12-13/A11-Site_0.csv,2025-12-13/Tris,1
+2025-12-13/A11-Site_1.csv,2025-12-13/Tris,1
+2025-12-13/B11-Site_0.csv,2025-12-13/TCEP,8
+2025-12-13/B11-Site_1.csv,2025-12-13/TCEP,8
+2025-12-13/C11-Site_0.csv,2025-12-13/EDTA,9
+2025-12-13/C11-Site_1.csv,2025-12-13/EDTA,9
+2025-12-13/D11-Site_0.csv,2025-12-13/TCEP+EDTA,10
+2025-12-13/D11-Site_1.csv,2025-12-13/TCEP+EDTA,10
+2025-12-13/E1-Site_0.csv,2025-12-13/DMSO,5
+2025-12-13/E1-Site_1.csv,2025-12-13/DMSO,5
+2025-12-13/E2-Site_0.csv,2025-12-13/Empty well,6
+2025-12-13/E2-Site_1.csv,2025-12-13/Empty well,6
+2025-12-13/A1-Site_0.csv,2025-12-13/BSA [low] in Tris,1
+2025-12-13/A1-Site_1.csv,2025-12-13/BSA [low] in Tris,1
+2025-12-13/A2-Site_0.csv,2025-12-13/BSA [high] in Tris,1
+2025-12-13/A2-Site_1.csv,2025-12-13/BSA [high] in Tris,1
+2025-12-13/B2-Site_0.csv,2025-12-13/BSA [high] in EDTA,2
+2025-12-13/B2-Site_1.csv,2025-12-13/BSA [high] in EDTA,2
+2025-12-13/B1-Site_0.csv,2025-12-13/BSA [low] in TCEP,2
+2025-12-13/B1-Site_1.csv,2025-12-13/BSA [low] in TCEP,2
+2025-12-13/C1-Site_0.csv,2025-12-13/BSA [low] in EDTA,3
+2025-12-13/C1-Site_1.csv,2025-12-13/BSA [low] in EDTA,3
+2025-12-13/C2-Site_0.csv,2025-12-13/BSA [high] in TCEP,3
+2025-12-13/C2-Site_1.csv,2025-12-13/BSA [high] in TCEP,3
+2025-12-13/D2-Site_0.csv,2025-12-13/BSA [high] in TCEP+EDTA,4
+2025-12-13/D2-Site_1.csv,2025-12-13/BSA [high] in TCEP+EDTA,4
+2025-12-13/D1-Site_0.csv,2025-12-13/BSA [low] in TCEP+EDTA,4
+2025-12-13/D1-Site_1.csv,2025-12-13/BSA [low] in TCEP+EDTA,4
+2025-12-13/A3-Site_0.csv,2025-12-13/FAF-BSA [low] in Tris,1
+2025-12-13/A3-Site_1.csv,2025-12-13/FAF-BSA [low] in Tris,1
+2025-12-13/A4-Site_0.csv,2025-12-13/FAF-BSA [high] in Tris,1
+2025-12-13/A4-Site_1.csv,2025-12-13/FAF-BSA [high] in Tris,1
+2025-12-13/B4-Site_0.csv,2025-12-13/FAF-BSA [high] in TCEP,2
+2025-12-13/B4-Site_1.csv,2025-12-13/FAF-BSA [high] in TCEP,2
+2025-12-13/B3-Site_0.csv,2025-12-13/FAF-BSA [low] in TCEP,2
+2025-12-13/B3-Site_1.csv,2025-12-13/FAF-BSA [low] in TCEP,2
+2025-12-13/C3-Site_0.csv,2025-12-13/FAF-BSA [low] in EDTA,3
+2025-12-13/C3-Site_1.csv,2025-12-13/FAF-BSA [low] in EDTA,3
+2025-12-13/C4-Site_0.csv,2025-12-13/FAF-BSA [high] in EDTA,3
+2025-12-13/C4-Site_1.csv,2025-12-13/FAF-BSA [high] in EDTA,3
+2025-12-13/D4-Site_0.csv,2025-12-13/FAF-BSA [high] in TCEP+EDTA,4
+2025-12-13/D4-Site_1.csv,2025-12-13/FAF-BSA [high] in TCEP+EDTA,4
+2025-12-13/D3-Site_0.csv,2025-12-13/FAF-BSA [low] in TCEP+EDTA,4
+2025-12-13/D3-Site_1.csv,2025-12-13/FAF-BSA [low] in TCEP+EDTA,4
+2025-12-13/A5-Site_0.csv,2025-12-13/Trypsin [low] in Tris,1
+2025-12-13/A5-Site_1.csv,2025-12-13/Trypsin [low] in Tris,1
+2025-12-13/A6-Site_0.csv,2025-12-13/Trypsin [high] in Tris,1
+2025-12-13/A6-Site_1.csv,2025-12-13/Trypsin [high] in Tris,1
+2025-12-13/B6-Site_0.csv,2025-12-13/Trypsin [high] in TCEP,2
+2025-12-13/B6-Site_1.csv,2025-12-13/Trypsin [high] in TCEP,2
+2025-12-13/B5-Site_0.csv,2025-12-13/Trypsin [low] in TCEP,2
+2025-12-13/B5-Site_1.csv,2025-12-13/Trypsin [low] in TCEP,2
+2025-12-13/C5-Site_0.csv,2025-12-13/Trypsin [low] in EDTA,3
+2025-12-13/C5-Site_1.csv,2025-12-13/Trypsin [low] in EDTA,3
+2025-12-13/C6-Site_0.csv,2025-12-13/Trypsin [high] in EDTA,3
+2025-12-13/C6-Site_1.csv,2025-12-13/Trypsin [high] in EDTA,3
+2025-12-13/D6-Site_0.csv,2025-12-13/Trypsin [high] in TCEP+EDTA,4
+2025-12-13/D6-Site_1.csv,2025-12-13/Trypsin [high] in TCEP+EDTA,4
+2025-12-13/D5-Site_0.csv,2025-12-13/Trypsin [low] in TCEP+EDTA,4
+2025-12-13/D5-Site_1.csv,2025-12-13/Trypsin [low] in TCEP+EDTA,4
+2025-12-13/A7-Site_0.csv,2025-12-13/Hemoglobin [low] in Tris,1
+2025-12-13/A7-Site_1.csv,2025-12-13/Hemoglobin [low] in Tris,1
+2025-12-13/A8-Site_0.csv,2025-12-13/Hemoglobin [high] in Tris,1
+2025-12-13/A8-Site_1.csv,2025-12-13/Hemoglobin [high] in Tris,1
+2025-12-13/B8-Site_0.csv,2025-12-13/Hemoglobin [high] in TCEP,2
+2025-12-13/B8-Site_1.csv,2025-12-13/Hemoglobin [high] in TCEP,2
+2025-12-13/B7-Site_0.csv,2025-12-13/Hemoglobin [low] in TCEP,2
+2025-12-13/B7-Site_1.csv,2025-12-13/Hemoglobin [low] in TCEP,2
+2025-12-13/C7-Site_0.csv,2025-12-13/Hemoglobin [low] in EDTA,3
+2025-12-13/C7-Site_1.csv,2025-12-13/Hemoglobin [low] in EDTA,3
+2025-12-13/C8-Site_0.csv,2025-12-13/Hemoglobin [high] in EDTA,3
+2025-12-13/C8-Site_1.csv,2025-12-13/Hemoglobin [high] in EDTA,3
+2025-12-13/D8-Site_0.csv,2025-12-13/Hemoglobin [high] in TCEP+EDTA,4
+2025-12-13/D8-Site_1.csv,2025-12-13/Hemoglobin [high] in TCEP+EDTA,4
+2025-12-13/D7-Site_0.csv,2025-12-13/Hemoglobin [low] in TCEP+EDTA,4
+2025-12-13/D7-Site_1.csv,2025-12-13/Hemoglobin [low] in TCEP+EDTA,4
+2025-12-13/A9-Site_0.csv,2025-12-13/CytC [low] in Tris,1
+2025-12-13/A9-Site_1.csv,2025-12-13/CytC [low] in Tris,1
+2025-12-13/A10-Site_0.csv,2025-12-13/CytC [high] in Tris,1
+2025-12-13/A10-Site_1.csv,2025-12-13/CytC [high] in Tris,1
+2025-12-13/B10-Site_0.csv,2025-12-13/CytC [high] in Tris+TCEP,2
+2025-12-13/B10-Site_1.csv,2025-12-13/CytC [high] in Tris+TCEP,2
+2025-12-13/B9-Site_0.csv,2025-12-13/CytC [low] in Tris+TCEP,2
+2025-12-13/B9-Site_1.csv,2025-12-13/CytC [low] in Tris+TCEP,2
+2025-12-13/C9-Site_0.csv,2025-12-13/CytC [low] in Tris+EDTA,3
+2025-12-13/C9-Site_1.csv,2025-12-13/CytC [low] in Tris+EDTA,3
+2025-12-13/C10-Site_0.csv,2025-12-13/CytC [high] in Tris+EDTA,3
+2025-12-13/C10-Site_1.csv,2025-12-13/CytC [high] in Tris+EDTA,3
+2025-12-13/D10-Site_0.csv,2025-12-13/CytC [high] in Tris+TCEP+EDTA,4
+2025-12-13/D10-Site_1.csv,2025-12-13/CytC [high] in Tris+TCEP+EDTA,4
+2025-12-13/D9-Site_0.csv,2025-12-13/CytC [low] in Tris+TCEP+EDTA,4
+2025-12-13/D9-Site_1.csv,2025-12-13/CytC [low] in Tris+TCEP+EDTA,4
+2025-12-10/A2-Site_0.csv,2025-12-10/BSA(10mgml) Tris,1
+2025-12-10/A2-Site_1.csv,2025-12-10/BSA(10mgml) Tris,1
+2025-12-10/A3-Site_0.csv,2025-12-10/BSA(3mgml) Tris,1
+2025-12-10/A3-Site_1.csv,2025-12-10/BSA(3mgml) Tris,1
+2025-12-10/A8-Site_0.csv,2025-12-10/DNAse Tris,1
+2025-12-10/A8-Site_1.csv,2025-12-10/DNAse Tris,1
+2025-12-10/A10-Site_0.csv,2025-12-10/IgG Tris,1
+2025-12-10/A10-Site_1.csv,2025-12-10/IgG Tris,1
+2025-12-10/B10-Site_0.csv,2025-12-10/IgG Tris+TCEP,2
+2025-12-10/B10-Site_1.csv,2025-12-10/IgG Tris+TCEP,2
+2025-12-10/B8-Site_0.csv,2025-12-10/DNAse Tris+TCEP,2
+2025-12-10/B8-Site_1.csv,2025-12-10/DNAse Tris+TCEP,2
+2025-12-10/B3-Site_0.csv,2025-12-10/BSA(3mgml) Tris+TCEP,2
+2025-12-10/B3-Site_1.csv,2025-12-10/BSA(3mgml) Tris+TCEP,2
+2025-12-10/B2-Site_0.csv,2025-12-10/BSA(10mgml) Tris+TCEP,2
+2025-12-10/B2-Site_1.csv,2025-12-10/BSA(10mgml) Tris+TCEP,2
+2025-12-10/C2-Site_0.csv,2025-12-10/BSA(10mgml) Tris+EDTA,3
+2025-12-10/C2-Site_1.csv,2025-12-10/BSA(10mgml) Tris+EDTA,3
+2025-12-10/C3-Site_0.csv,2025-12-10/BSA(3mgml) Tris+EDTA,3
+2025-12-10/C3-Site_1.csv,2025-12-10/BSA(3mgml) Tris+EDTA,3
+2025-12-10/C8-Site_0.csv,2025-12-10/DNAse Tris+EDTA,3
+2025-12-10/C8-Site_1.csv,2025-12-10/DNAse Tris+EDTA,3
+2025-12-10/C10-Site_0.csv,2025-12-10/IgG Tris+EDTA,3
+2025-12-10/C10-Site_1.csv,2025-12-10/IgG Tris+EDTA,3
+2025-12-10/D10-Site_0.csv,2025-12-10/IgG Tris+TCEP+EDTA,4
+2025-12-10/D10-Site_1.csv,2025-12-10/IgG Tris+TCEP+EDTA,4
+2025-12-10/D8-Site_0.csv,2025-12-10/DNAse Tris+TCEP+EDTA,4
+2025-12-10/D8-Site_1.csv,2025-12-10/DNAse Tris+TCEP+EDTA,4
+2025-12-10/D3-Site_0.csv,2025-12-10/BSA(3mgml) Tris+TCEP+EDTA,4
+2025-12-10/D3-Site_1.csv,2025-12-10/BSA(3mgml) Tris+TCEP+EDTA,4
+2025-12-10/D2-Site_0.csv,2025-12-10/BSA(10mgml) Tris+TCEP+EDTA,4
+2025-12-10/D2-Site_1.csv,2025-12-10/BSA(10mgml) Tris+TCEP+EDTA,4
+2025-12-10/A1-Site_0.csv,2025-12-10/Tris,1
+2025-12-10/A1-Site_1.csv,2025-12-10/Tris,1
+2025-12-10/B1-Site_0.csv,2025-12-10/Tris+TCEP,2
+2025-12-10/B1-Site_1.csv,2025-12-10/Tris+TCEP,2
+2025-12-10/C1-Site_0.csv,2025-12-10/Tris+EDTA,3
+2025-12-10/C1-Site_1.csv,2025-12-10/Tris+EDTA,3
+2025-12-10/D1-Site_0.csv,2025-12-10/Tris+TCEP+EDTA,4
+2025-12-10/D1-Site_1.csv,2025-12-10/Tris+TCEP+EDTA,4
+2025-12-10/E1-Site_0.csv,2025-12-10/DMSO,9
+2025-12-10/E1-Site_1.csv,2025-12-10/DMSO,9

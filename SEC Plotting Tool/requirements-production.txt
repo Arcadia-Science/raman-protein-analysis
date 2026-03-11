@@ -1,0 +1,3 @@
+# For local: pip install -r requirements.txt
+# For hosting (e.g. Render): pip install -r requirements.txt -r requirements-production.txt
+gunicorn>=3.0.0
