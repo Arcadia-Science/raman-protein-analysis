@@ -408,7 +408,7 @@ def plot_spectra(spectra: dict,
                 x=x_data,
                 y=y_data + y_offset * group_label,
                 name=data_name,
-                line=dict(color=colors[group_label]),
+                line=dict(color=colors[group_label % len(colors)]),
                 text=data_name.replace(' ', '<br>'),
                 hoverinfo='text+x+y'
             )
