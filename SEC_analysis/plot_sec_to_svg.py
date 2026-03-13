@@ -12,8 +12,6 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 import numpy as np
-import matplotlib
-matplotlib.use("Agg")  # Non-GUI backend: safe in threads (e.g. Flask) and headless
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
 import pandas as pd
@@ -37,15 +35,17 @@ if FONT_DIR.is_dir():
     for _f in sorted(FONT_DIR.glob("*.ttf")):
         font_manager.fontManager.addfont(str(_f))
 
-# 2026 Arcadia Style Guide: Teal, Blue, Orange, Canary (orange-yellow, distinct)
-# One color per suffix; order: _standards, _TCEP, _EDTA, _TCEP_EDTA
-ARCADIA_TEAL = apc.seaweed.hex_code    # #3B9886  -> standard(s)
-ARCADIA_BLUE = apc.aegean.hex_code    # #5088C5  -> TCEP
-ARCADIA_ORANGE = apc.amber.hex_code   # #F28360  -> EDTA
-ARCADIA_CANARY = apc.canary.hex_code  # #F7B846  -> TCEP_EDTA (orange-yellow)
-ARCADIA_GRAY = apc.bark.hex_code      # #8F8885
+# * No perturbation: Chateau (b9afa7)
+# * TCEP: Canary (f7b846)
+# * EDTA: Aegean (5088c5)
+# * Both: Seaweed (3b9886)
+COLOR_NOPERTURBATION = apc.chateau
+COLOR_TCEP = apc.canary
+COLOR_EDTA = apc.aegean
+COLOR_BOTH = apc.seaweed
+COLOR_GRAY = apc.bark
 BLACK = "#000000"
-LINE_COLORS = [ARCADIA_TEAL, ARCADIA_BLUE, ARCADIA_ORANGE, ARCADIA_CANARY]
+LINE_COLORS = [COLOR_NOPERTURBATION, COLOR_TCEP, COLOR_EDTA, COLOR_BOTH]
 
 # Legend order by suffix (same on every plot)
 SUFFIX_ORDER = ("_standards", "_standard", "_TCEP", "_EDTA", "_TCEP_EDTA")
@@ -203,7 +203,7 @@ def render_sec_svg(
     else:
         legend_labels = [lbl.strip() if (lbl and lbl.strip()) else comp for lbl, comp in zip(legend_labels, computed_labels)]
     apc.mpl.setup()
-    plt.rc("font", family=FONT_FAMILY)
+
     fig, ax = plt.subplots(figsize=(10, 6))
     for idx, (x, y, label, peak_vol, peak_y_val) in enumerate(pairs):
         color = LINE_COLORS[_color_index_for_label(label)]
@@ -214,9 +214,9 @@ def render_sec_svg(
     ax.set_title(title, **FONT_TITLE)
     ax.tick_params(axis="both", labelsize=FONT_TICKS["fontsize"], colors=BLACK)
     ax.set_facecolor("white")
-    ax.grid(True, color=ARCADIA_GRAY, linestyle="-", linewidth=0.5, alpha=0.7)
-    ax.spines["bottom"].set_color(ARCADIA_GRAY)
-    ax.spines["left"].set_color(ARCADIA_GRAY)
+    ax.grid(True, color=COLOR_GRAY, linestyle="-", linewidth=0.5, alpha=0.7)
+    ax.spines["bottom"].set_color(COLOR_GRAY)
+    ax.spines["left"].set_color(COLOR_GRAY)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     leg = ax.legend(
@@ -238,7 +238,7 @@ def render_sec_svg(
     fig.tight_layout()
     buf = io.StringIO()
     fig.savefig(buf, format="svg", bbox_inches="tight")
-    plt.close(fig)
+    fig.show()
     return buf.getvalue()
 
 
