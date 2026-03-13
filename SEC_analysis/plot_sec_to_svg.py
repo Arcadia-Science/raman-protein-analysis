@@ -17,7 +17,7 @@ from matplotlib import font_manager
 import pandas as pd
 import arcadia_pycolor as apc
 
-mpl.
+
 # Paths: repo has data/ (raw folders) and normalized/ (xlsx from sec_raw_to_normalized). Read xlsx from normalized/ or data/.
 _SCRIPT_DIR = Path(__file__).resolve().parent
 if (_SCRIPT_DIR / "normalized").is_dir():
