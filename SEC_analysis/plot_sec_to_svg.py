@@ -17,6 +17,7 @@ from matplotlib import font_manager
 import pandas as pd
 import arcadia_pycolor as apc
 
+mpl.
 # Paths: repo has data/ (raw folders) and normalized/ (xlsx from sec_raw_to_normalized). Read xlsx from normalized/ or data/.
 _SCRIPT_DIR = Path(__file__).resolve().parent
 if (_SCRIPT_DIR / "normalized").is_dir():
@@ -102,11 +103,11 @@ def _protein_display(label: str) -> str:
     return full
 
 # Typography: Atkinson Hyperlegible (Style Guide); fallback if not installed
-FONT_FAMILY = ["Atkinson Hyperlegible", "Atkinson Hyperlegible Next", "sans-serif"]
-FONT_TITLE = {"fontsize": 14, "fontweight": "bold", "color": BLACK}
-FONT_AXES = {"fontsize": 12, "color": BLACK}
-FONT_TICKS = {"fontsize": 10, "color": BLACK}
-FONT_LEGEND = {"size": 10, "color": BLACK}
+# FONT_FAMILY = ["Atkinson Hyperlegible", "Atkinson Hyperlegible Next", "sans-serif"]
+# FONT_TITLE = {"fontsize": 14, "fontweight": "bold", "color": BLACK}
+# FONT_AXES = {"fontsize": 12, "color": BLACK}
+# FONT_TICKS = {"fontsize": 10, "color": BLACK}
+# FONT_LEGEND = {"size": 10, "color": BLACK}
 
 
 def get_series_pairs(df: pd.DataFrame):
@@ -196,7 +197,7 @@ def render_sec_svg(
         raise ValueError("No series to plot")
     pairs = sorted(pairs, key=_sort_key_for_legend)
     if legend_title is None:
-        legend_title = _protein_display(pairs[0][2]) + " - Condition"
+        legend_title = _protein_display(pairs[0][2])
     computed_labels = [f"{_condition_display(label)} ({peak_vol:.2f} mL)" for (_, __, label, peak_vol, ___) in pairs]
     if legend_labels is None or len(legend_labels) != len(pairs):
         legend_labels = computed_labels
@@ -209,37 +210,29 @@ def render_sec_svg(
         color = LINE_COLORS[_color_index_for_label(label)]
         leg_label = legend_labels[idx] if idx < len(legend_labels) else f"{_condition_display(label)} ({peak_vol:.2f} mL)"
         ax.plot(x, y, color=color, label=leg_label, linewidth=2)
-    ax.set_xlabel("Volume (mL)", fontdict=FONT_AXES)
-    ax.set_ylabel("Normalised UV Absorbance", fontdict=FONT_AXES)
-    ax.set_title(title, **FONT_TITLE)
-    ax.tick_params(axis="both", labelsize=FONT_TICKS["fontsize"], colors=BLACK)
-    ax.set_facecolor("white")
-    ax.grid(True, color=COLOR_GRAY, linestyle="-", linewidth=0.5, alpha=0.7)
-    ax.spines["bottom"].set_color(COLOR_GRAY)
-    ax.spines["left"].set_color(COLOR_GRAY)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
+    ax.set_xlabel("Volume (mL)")
+    ax.set_ylabel("Normalised UV Absorbance")
+    ax.tick_params(axis="both", colors=BLACK)
     leg = ax.legend(
-        loc="center left",
-        bbox_to_anchor=(1.02, 0.5),
+        loc="upper left",
+        bbox_to_anchor=(1.02, 1.0),
         frameon=False,
         title=legend_title,
-        prop={"size": FONT_LEGEND["size"], "family": FONT_FAMILY[0] if isinstance(FONT_FAMILY, list) else FONT_FAMILY},
+        borderaxespad=0.0,
+        alignment="left",
     )
     leg.get_title().set_color(BLACK)
-    leg.get_title().set_fontsize(FONT_LEGEND["size"])
     for t in leg.get_texts():
         t.set_color(BLACK)
     apc.mpl.style_plot(ax)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     leg.get_title().set_color(BLACK)
-    leg.get_title().set_fontsize(FONT_LEGEND["size"])
     fig.tight_layout()
     buf = io.StringIO()
     fig.savefig(buf, format="svg", bbox_inches="tight")
     fig.show()
-    return buf.getvalue()
+
 
 
 def plot_one_file(excel_path: Path, output_dir: Path) -> None:
