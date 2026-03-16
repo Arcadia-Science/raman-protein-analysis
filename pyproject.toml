@@ -1,6 +1,6 @@
 [project]
 name = "raman-analysis"
-description = "A Python package for analyzing Raman spectroscopy data with support for multiple instruments"
+description = "Analysis code for Raman spectroscopy and SEC protein perturbation experiments"
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -8,7 +8,7 @@ license = { text = "MIT" }
 authors = [
     { name = "Your Name", email = "your.email@example.com" }
 ]
-keywords = ["raman", "spectroscopy", "analysis", "horiba", "wasatch", "openraman"]
+keywords = ["raman", "spectroscopy", "analysis", "sec", "protein"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
@@ -19,11 +19,15 @@ classifiers = [
 ]
 dependencies = [
     "arcadia-pycolor>=0.7.2",
+    "ipykernel>=7.2.0",
+    "matplotlib>=3.7.0",
     "nbformat>=5.10.4",
+    "numpy>=1.24.0",
     "openpyxl>=3.1.5",
     "pandas>=1.5.0",
     "plotly>=5.0.0",
     "ramanspy>=0.2.0",
+    "scipy>=1.10.0",
 ]
 
 [tool.setuptools.packages.find]

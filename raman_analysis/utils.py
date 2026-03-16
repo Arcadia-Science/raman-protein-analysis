@@ -1,10 +1,8 @@
 """
-Utility functions for parsing Raman spectroscopy data files.
+Utility functions for parsing and plotting InstantRaman spectroscopy data.
 """
 
-import json
 from pathlib import Path
-from typing import Iterable, Optional
 
 import numpy as np
 import pandas as pd
@@ -12,244 +10,130 @@ import plotly.express as px
 import plotly.graph_objects as go
 import ramanspy as rp
 
-ANNOTATION_FILE_DIR = "../peak-ID/"
-POSSIBLE_WASATCH_COLUMNS = ['Wavelength', 'Wavenumber', 'Processed', 'Raw', 'Dark']
-
-def subtract_scaled_bg_variance(
-    spectrum: np.ndarray,
-    bg: np.ndarray,
-    wn: np.ndarray,
-    wn_min: float,
-    wn_max: float,
-):
-    """
-    Scale the background and subtract it from `spectrum` such that the variance
-    of the corrected signal in [wn_min, wn_max] is minimized.
-
-    Parameters
-    ----------
-    spectrum : np.array
-        The input spectrum to be background-corrected.
-    bg : np.array
-        The background spectrum to be scaled and subtracted.
-    wn : np.array
-        The wavenumber axis corresponding to `spectrum` and `bg`.
-    wn_min : float
-        The minimum wavenumber of the optimization window
-    wn_max : float
-        The maximum wavenumber of the optimization window
-
-    Returns
-    -------
-    corrected : np.array
-        Background-corrected spectrum on the original wavenumber grid.
-    alpha : float
-        The scaling factor applied to `bg`.
-    """
-
-    # Ensure input arrays are the same length
-    if not (len(spectrum) == len(bg) == len(wn)):
-        raise ValueError("Input arrays must have the same length.")
-    
-    # Select the optimization window
-    win = (wn >= wn_min) & (wn <= wn_max)
-    if not np.any(win):
-        raise ValueError(f"No points within window [{wn_min}, {wn_max}] cm^-1.")
-
-    s_win = spectrum[win]
-    b_win = bg[win]
-
-
-    # subtract 1st order polynomial fit from spectrum and bg to remove baseline offset/trend
-    # in case there is lingering signal in the windows
-    p_s = np.polyfit(wn[win], s_win, deg=1)
-    p_b = np.polyfit(wn[win], b_win, deg=1)
-    s_win = s_win - np.polyval(p_s, wn[win])
-    b_win = b_win - np.polyval(p_b, wn[win])
-
-    # Closed-form α minimizing Var(s - α b):
-    # α* = Cov(s,b) / Var(b)
-    var_b = np.var(b_win, ddof=1)
-
-    alpha_star = np.cov(s_win, b_win, ddof=1)[0, 1] / var_b
-
-    # Apply correction over the full spectrum
-    y_corr = spectrum - alpha_star * bg
-
-    return y_corr, alpha_star
-
-def write_spectrum(
-    file_path: Path,
-    x: Iterable[float],
-    y: Iterable[float],
-    header: Optional[list] = None,
-    y_dark_subtracted: Optional[Iterable[float]] = None,
-) -> None:
-    """
-    Write a 2 or 3-column CSV file of x and y (and optionally dark-subtracted y)
-
-    Parameters:
-        file_path (str): The name of the file to write to.
-        x (Iterable): An Iterable of pixel values.
-        y (Iterable): An Iterable of intensity values corresponding to each pixel.
-        header (list, optional): A list of header values. Defaults to `["Pixel", "Intensity"]`.
-        y_dark_subtracted (Iterable, optional): Dark-subtracted intensity values.
-    """
-    # Check if the lengths of the arrays match
-    if header is None:
-        header = ["Pixel", "Intensity"]
-    if len(x) != len(y):
-        raise ValueError("The length of x and y arrays must be the same.")
-
-    # If dark-subtracted values provided, add them
-    if y_dark_subtracted is not None:
-        if len(x) != len(y_dark_subtracted):
-            raise ValueError("The length of x and y_dark_subtracted arrays must be the same.")
-        if len(header) == 2:
-            header = header + ["Intensity (dark-subtracted)"]
-
-    with open(file_path, mode="w", newline="") as file:
-        writer = csv.writer(file)
-        # Write the header
-        writer.writerow(header)
-        # Write the data rows
-        if y_dark_subtracted is not None:
-            for pixel, intensity, intensity_dark in zip(x, y, y_dark_subtracted):
-                writer.writerow([pixel, intensity, intensity_dark])
-        else:
-            for pixel, intensity in zip(x, y):
-                writer.writerow([pixel, intensity])
-
-
 
 def collect_spectra_from_dir(data_dir, instrument, include_files=None, recursive=False) -> tuple:
-    '''
-    Collect data from files in the directory.
+    """
+    Collect spectra from files in a directory.
 
     Inputs:
         data_dir: str, directory with files
-        instrument: str, type of instrument ('horiba', 'wasatch', 'openraman', 'instantraman')
-        include_files: list of str, filenames to include. If none, all files in the directory will be included
+        instrument: str, type of instrument ('instantraman')
+        include_files: list of str, filenames to include. If None, all files are included
         recursive: bool, if True, search for files recursively in subdirectories
 
     Returns:
-        data_list: list of pd.DataFrame, list of dataframes with collected data
-        sample_df: pd.DataFrame, sample table with columns 'ID', 'Name', 'Group ID'
-    '''
-    acceptable_ext = ['.txt', '.tsv', '.csv']
+        data_list: list of (filename, pd.DataFrame) tuples
+        sample_df: pd.DataFrame with columns 'ID', 'Name', 'Group ID'
+    """
+    acceptable_ext = [".txt", ".tsv", ".csv"]
     if include_files:
         files = include_files
     else:
+        data_path = Path(data_dir)
         if recursive:
             files = []
-            data_path = Path(data_dir)
-            for file_path in data_path.rglob('*'):
+            for file_path in data_path.rglob("*"):
                 if file_path.is_file() and file_path.suffix.lower() in acceptable_ext:
-                    # Store relative path from data_dir
-                    relative_path = file_path.relative_to(data_path)
-                    files.append(str(relative_path))
+                    files.append(str(file_path.relative_to(data_path)))
         else:
-            data_path = Path(data_dir)
-            files = [f.name for f in data_path.iterdir() if f.is_file() and f.suffix.lower() in acceptable_ext]
-    
-    # remove sample_table.csv from files
-    if 'sample_table.csv' in files:
-        files.remove('sample_table.csv')
-    
-    # sort files in alphabetical order, first by parent directory, then by filename
+            files = [
+                f.name
+                for f in data_path.iterdir()
+                if f.is_file() and f.suffix.lower() in acceptable_ext
+            ]
+
+    if "sample_table.csv" in files:
+        files.remove("sample_table.csv")
+
     files.sort(key=lambda x: (Path(x).parent.as_posix(), Path(x).name))
 
-    # Create sample_table.csv if it doesn't exist
     data_path = Path(data_dir)
-    sample_table_path = data_path / 'sample_table.csv'
+    sample_table_path = data_path / "sample_table.csv"
     if not sample_table_path.exists():
         print(f"Warning: Creating new sample_table.csv in {data_dir}")
         sample_data = []
         for i, file in enumerate(files):
             file_path = Path(file)
-            sample_data.append({
-                'ID': file,
-                'Name': file_path.with_suffix(''),
-                'Group ID': i
-            })
+            sample_data.append({"ID": file, "Name": file_path.with_suffix(""), "Group ID": i})
         sample_df = pd.DataFrame(sample_data)
         sample_df.to_csv(sample_table_path, index=False)
     else:
         print(f"Loading existing sample_table.csv: {sample_table_path}")
-        # Load existing sample table
         try:
-            sample_df = pd.read_csv(sample_table_path, index_col=0, dtype={'ID': str, 'Name': str, 'Group ID': int})
+            sample_df = pd.read_csv(
+                sample_table_path,
+                index_col=0,
+                dtype={"ID": str, "Name": str, "Group ID": int},
+            )
         except Exception as e:
-            raise ValueError(f"Error reading sample_table.csv: {e}. Ensure it has columns 'ID', 'Name', 'Group ID'.")
+            raise ValueError(
+                f"Error reading sample_table.csv: {e}. "
+                "Ensure it has columns 'ID', 'Name', 'Group ID'."
+            ) from e
+
     data_list = []
-    data_path = Path(data_dir)
     for file in files:
         file_path = data_path / file
-        if instrument.lower() == 'horiba':
-            df = parse_horiba_output(file_path)
-        elif instrument.lower() == 'wasatch':
-            df = parse_wasatch_output(file_path)
-        elif instrument.lower() == 'openraman':
-            df = parse_openraman_output(file_path)
-        elif instrument.lower() == 'instantraman':
+        if instrument.lower() == "instantraman":
             df = parse_instantraman_output(file_path)
         else:
-            raise ValueError('Unsupported instrument type: ', instrument)
+            raise ValueError("Unsupported instrument type: ", instrument)
         if df is not None:
             data_list.append((file, df))
-    
+
     if not data_list:
-        raise ValueError(f"No valid data files found in {data_dir}. Check the directory. Set `recursive=True` to search subdirectories.")
+        raise ValueError(
+            f"No valid data files found in {data_dir}. "
+            "Check the directory. Set `recursive=True` to search subdirectories."
+        )
     print(f"Collected {len(data_list)} files from {data_dir}")
     return data_list, sample_df
 
 
-
-def process_spectra_from_dir(data_list,
-                              data_dir: str | Path,
-                              x_to_plot: str = "Wavenumber",
-                              col_to_plot: str = "Intensity",
-                              rp_pipeline=None,
-                              include: list | None = None,
-                              subtract_id: str | dict | None = None):
-    '''
-    Load and preprocess spectra from a directory into a RamanSPy SpectralContainer.
+def process_spectra_from_dir(
+    data_list,
+    data_dir: str | Path,
+    x_to_plot: str = "Wavenumber",
+    col_to_plot: str = "Intensity",
+    rp_pipeline=None,
+    include: list | None = None,
+    subtract_id: str | dict | None = None,
+):
+    """
+    Load and preprocess spectra from a directory into a dict of RamanSPy Spectra.
 
     Inputs:
-        data_list: list of pd.DataFrame, list of spectrum dataframes with normalized data
+        data_list: list of (filename, pd.DataFrame) tuples
         data_dir: pathlib.Path, directory with files
-        x_to_plot: str, column in dataframe to use as x-axis (default is "Wavenumber")
-        col_to_plot: str, column in dataframe to plot
-        rp_pipeline: `ramanspy.preprocessing.Pipeline`, preprocessing pipeline to apply (optional)
-        include: list (optional), sample names to include. Must exactly match the 'Name' column in `sample_table.csv`
-        subtract_id: str or dict, spectrum to subtract from other spectra (optional)
-            - If str: filename or sample ID of spectrum to subtract from all other spectra
-            - If dict: keys are filenames/sample IDs, values are filenames/sample IDs of spectra to subtract from each key
+        x_to_plot: str, column to use as spectral axis (default "Wavenumber")
+        col_to_plot: str, column to use as intensity values
+        rp_pipeline: ramanspy.preprocessing.Pipeline, applied after subtraction (optional)
+        include: list of sample names to include; must match 'Name' in sample_table.csv (optional)
+        subtract_id: str or dict for background subtraction (optional)
+            - str: subtract this spectrum from all others
+            - dict: maps sample name → background name
 
     Returns:
-        spectra: dict mapping spectrum name (str) to processed `ramanspy.Spectrum`
-    '''
+        spectra: dict mapping sample name (str) to processed ramanspy.Spectrum
+    """
     data_path = Path(data_dir)
-    sample_table_path = data_path / 'sample_table.csv'
+    sample_table_path = data_path / "sample_table.csv"
     if not sample_table_path.exists():
         raise FileNotFoundError(f"sample_table.csv not found in {data_dir}")
 
-    sample_table = pd.read_csv(sample_table_path, index_col=0, dtype={'ID': str, 'Name': str, 'Group ID': int})
+    sample_table = pd.read_csv(
+        sample_table_path, index_col=0, dtype={"ID": str, "Name": str, "Group ID": int}
+    )
 
     if include is not None:
-        # filter sample_table to only include samples in include
-        sample_table = sample_table[sample_table['Name'].isin(include)]
-
-        # filter data_list to only include samples mentioned in sample_table
+        sample_table = sample_table[sample_table["Name"].isin(include)]
         data_list = [f for f in data_list if f[0] in sample_table.index.values]
 
-    # Factorize 'Group ID' for color indexing
-    sample_table["Group ID factorized"] = pd.factorize(sample_table['Group ID'])[0]
+    # Factorizing is needed because Group IDs may not be contiguous integers starting at 0
+    sample_table["Group ID factorized"] = pd.factorize(sample_table["Group ID"])[0]
 
-    # sort data_list based on sample_table
     sorted_data_list = []
     for index, _ in sample_table.iterrows():
-        # Find the corresponding file in data_list
         matching_files = [f for f in data_list if f[0] == index]
         if len(matching_files) > 1:
             print(f"Warning: Multiple files match sample '{index}'. Using the first match.")
@@ -258,30 +142,28 @@ def process_spectra_from_dir(data_list,
         if matching_files:
             sorted_data_list.append(matching_files[0])
 
-    # Process subtract spectrum if provided
-    # Can be either a single string (subtract from all) or dict (specific subtractions)
     subtract_spectrum = None
     subtract_spectra_dict = {}
 
     if subtract_id is not None:
-        # Helper function to find spectrum data by ID
+
         def find_spectrum_data(target_id):
             for file, df in sorted_data_list:
                 if file in sample_table.index:
-                    if target_id == sample_table.loc[file]['Name']:
+                    if target_id == sample_table.loc[file]["Name"]:
                         return (file, df)
                 if target_id == file:
                     return (file, df)
             return None
 
         if isinstance(subtract_id, str):
-            # Original behavior: single subtract spectrum for all
             subtract_data = find_spectrum_data(subtract_id)
-
             if subtract_data is None:
-                print(f"Warning: Could not find subtract spectrum '{subtract_id}'. Proceeding without subtraction.")
+                print(
+                    f"Warning: Could not find subtract spectrum '{subtract_id}'. "
+                    "Proceeding without subtraction."
+                )
             else:
-                # Process subtract spectrum
                 file, df = subtract_data
                 if col_to_plot not in df.columns:
                     raise ValueError(f"Column '{col_to_plot}' not found in subtract spectrum data.")
@@ -290,110 +172,110 @@ def process_spectra_from_dir(data_list,
                 subtract_spectrum = rp.Spectrum(df[col_to_plot].values, df[x_to_plot].values)
 
         elif isinstance(subtract_id, dict):
-            # New behavior: dict mapping sample IDs to their respective subtract spectra
             for key, value in subtract_id.items():
                 subtract_data = find_spectrum_data(value)
-
                 if subtract_data is None:
-                    print(f"Warning: Could not find subtract spectrum '{value}' for key '{key}'. Skipping this subtraction.")
+                    print(
+                        f"Warning: Could not find subtract spectrum '{value}' "
+                        f"for key '{key}'. Skipping."
+                    )
                 else:
                     file, df = subtract_data
                     if col_to_plot not in df.columns:
-                        raise ValueError(f"Column '{col_to_plot}' not found in subtract spectrum '{value}'.")
+                        raise ValueError(
+                            f"Column '{col_to_plot}' not found in subtract spectrum '{value}'."
+                        )
                     if x_to_plot not in df.columns:
-                        raise ValueError(f"Column '{x_to_plot}' not found in subtract spectrum '{value}'.")
-                    subtract_spectra_dict[key] = rp.Spectrum(df[col_to_plot].values, df[x_to_plot].values)
-
+                        raise ValueError(
+                            f"Column '{x_to_plot}' not found in subtract spectrum '{value}'."
+                        )
+                    subtract_spectra_dict[key] = rp.Spectrum(
+                        df[col_to_plot].values, df[x_to_plot].values
+                    )
         else:
             raise TypeError("subtract_id must be either a str or dict")
 
     spectra = {}
 
-    for (file, df) in sorted_data_list:
+    for file, df in sorted_data_list:
         if col_to_plot not in df.columns:
             raise ValueError(f"Column '{col_to_plot}' not found in '{file}' spectrum data.")
         if x_to_plot not in df.columns:
             raise ValueError(f"Column '{x_to_plot}' not found in '{file}' spectrum data.")
 
         sample_id = Path(file).stem
-        # Create RamanSPy Spectrum object
         spectrum = rp.Spectrum(df[col_to_plot].values, df[x_to_plot].values)
+        sample_name = sample_table.loc[file]["Name"]
 
-        sample_name = sample_table.loc[file]['Name']
-
-        # Subtract reference spectrum if provided (before applying pipeline)
         spectrum_to_subtract = None
 
         if subtract_spectrum is not None:
-            # String case: subtract from all spectra (except the subtract spectrum itself)
-            is_subtract_spectrum = (subtract_id == file or subtract_id == sample_id or subtract_id == sample_name)
-
-            # Skip subtraction if this is the subtract spectrum itself
+            is_subtract_spectrum = (
+                subtract_id == file or subtract_id == sample_id or subtract_id == sample_name
+            )
             if not is_subtract_spectrum:
                 spectrum_to_subtract = subtract_spectrum
 
         elif subtract_spectra_dict:
-            # Dict case: check if this spectrum has a specific subtract spectrum
-            # Try to find the spectrum in the dict using file, sample_id, or sample_name as key
             for key_to_try in [file, sample_id, sample_name]:
                 if key_to_try in subtract_spectra_dict:
                     spectrum_to_subtract = subtract_spectra_dict[key_to_try]
                     break
 
-        # Perform subtraction if a spectrum was found
         if spectrum_to_subtract is not None:
             y_data_subtract = spectrum_to_subtract.spectral_data
-            # Ensure spectral axes match for subtraction
             if len(spectrum.spectral_data) == len(y_data_subtract):
                 spectrum.spectral_data = spectrum.spectral_data - y_data_subtract
 
-        # Apply preprocessing pipeline if provided (after subtraction)
         if rp_pipeline is not None:
             spectrum = rp_pipeline.apply(spectrum)
 
         spectra[sample_name] = spectrum
 
     if not spectra:
-        raise ValueError("No valid spectra found to plot. Check your data directory and filtering conditions.")
+        raise ValueError(
+            "No valid spectra found to plot. Check your data directory and filtering conditions."
+        )
 
     return spectra
 
 
-def plot_spectra(spectra: dict,
-                 data_dir: str | Path,
-                 colors=None,
-                 y_offset: float = 0,
-                 **plotting_kwargs):
-    '''
+def plot_spectra(
+    spectra: dict,
+    data_dir: str | Path,
+    colors=None,
+    y_offset: float = 0,
+    **plotting_kwargs,
+):
+    """
     Plot a dict of RamanSPy spectra using Plotly.
 
     Inputs:
-        spectra: dict mapping spectrum name (str) to `ramanspy.Spectrum`,
+        spectra: dict mapping sample name (str) to ramanspy.Spectrum,
             as returned by process_spectra_from_dir
-        data_dir: str or pathlib.Path, directory with files (used for plot title and
-            group-based coloring via sample_table.csv)
-        colors: list of str, colors to use for plotting. If None, uses default Plotly D3 colors
-        y_offset: float, vertical offset per group for clarity (default 0)
-        plotting_kwargs: additional plotly keyword arguments for fig.update_layout
+        data_dir: str or pathlib.Path, used for group-based coloring via sample_table.csv
+        colors: list of str, colors for each group. Defaults to Plotly D3 palette
+        y_offset: float, vertical offset per group for visual separation (default 0)
+        plotting_kwargs: additional keyword arguments passed to fig.update_layout
 
     Returns:
-        fig: plotly Figure object
-    '''
+        fig: plotly Figure
+    """
     if colors is None:
         colors = px.colors.qualitative.D3
 
     data_path = Path(data_dir)
-    sample_table_path = data_path / 'sample_table.csv'
+    sample_table_path = data_path / "sample_table.csv"
     if not sample_table_path.exists():
         raise FileNotFoundError(f"sample_table.csv not found in {data_dir}")
 
     sample_table = pd.read_csv(
-        sample_table_path, index_col=0, dtype={'ID': str, 'Name': str, 'Group ID': int}
+        sample_table_path, index_col=0, dtype={"ID": str, "Name": str, "Group ID": int}
     )
-    # Factorizing is needed because Group IDs may not be contiguous integers and start at 0
-    sample_table["Group ID factorized"] = pd.factorize(sample_table['Group ID'])[0]
+    # Factorizing is needed because Group IDs may not be contiguous integers starting at 0
+    sample_table["Group ID factorized"] = pd.factorize(sample_table["Group ID"])[0]
     name_to_group = dict(
-        zip(sample_table['Name'], sample_table['Group ID factorized'], strict=False)
+        zip(sample_table["Name"], sample_table["Group ID factorized"], strict=False)
     )
 
     fig = go.Figure()
@@ -409,55 +291,53 @@ def plot_spectra(spectra: dict,
                 y=y_data + y_offset * group_label,
                 name=data_name,
                 line=dict(color=colors[group_label % len(colors)]),
-                text=data_name.replace(' ', '<br>'),
-                hoverinfo='text+x+y'
+                text=data_name.replace(" ", "<br>"),
+                hoverinfo="text+x+y",
             )
         )
 
     fig.update_layout(
         showlegend=True,
         title_text=data_path.parent.name,
-        template='plotly_white',
-        **plotting_kwargs
+        template="plotly_white",
+        **plotting_kwargs,
     )
 
     return fig
 
 
-def plot_spectra_in_dir(data_list,
-                        data_dir: str | Path,
-                        x_to_plot: str = "Wavenumber",
-                        col_to_plot: str = "Intensity",
-                        rp_pipeline=None,
-                        include: list | None = None,
-                        colors=None,
-                        subtract_id: str | dict | None = None,
-                        y_offset = 0,
-                        **plotting_kwargs):
-    '''
-    Plot normalized data using RamanSPy for preprocessing.
-
-    **LEGACY FUNCTION - use process_spectra_from_dir and plot_spectra separately.**
+def plot_spectra_in_dir(
+    data_list,
+    data_dir: str | Path,
+    x_to_plot: str = "Wavenumber",
+    col_to_plot: str = "Intensity",
+    rp_pipeline=None,
+    include: list | None = None,
+    colors=None,
+    subtract_id: str | dict | None = None,
+    y_offset=0,
+    **plotting_kwargs,
+):
+    """
+    Preprocess and plot spectra from a directory.
 
     Inputs:
-        data_list: list of pd.DataFrame, list of spectrum dataframes with normalized data
-        col_to_plot: str, column in dataframe to plot
+        data_list: list of (filename, pd.DataFrame) tuples
         data_dir: pathlib.Path, directory with files
-        rp_pipeline: `ramanspy.preprocessing.Pipeline`, preprocessing pipeline to apply (optional)
-        include: list (optional), sample names to include in the plot. Must exactly match the 'Name' column in `sample_table.csv`
-        colors: list of str, colors to use for plotting. If None, uses default Plotly colors
-        x_to_plot: str, column in dataframe to use as x-axis (default is "Wavenumber")
-        subtract_id: str or dict, spectrum to subtract from other spectra (optional)
-            - If str: filename or sample ID of spectrum to subtract from all other spectra
-            - If dict: keys are filenames/sample IDs, values are filenames/sample IDs of spectra to subtract from each key
-        y_offset: float, offset to apply to plot for clarity (optional). The default is 0
-        plotting_kwargs: additional plotly keyword arguments for plotting
+        x_to_plot: str, column to use as spectral axis (default "Wavenumber")
+        col_to_plot: str, column to use as intensity values
+        rp_pipeline: ramanspy.preprocessing.Pipeline (optional)
+        include: list of sample names to include; must match 'Name' in sample_table.csv (optional)
+        colors: list of str, colors for each group (optional)
+        subtract_id: str or dict for background subtraction (optional)
+        y_offset: float, vertical offset per group (default 0)
+        plotting_kwargs: additional keyword arguments for fig.update_layout
 
     Returns:
-        fig: plotly Figure object
-        spectra_names: list of str, names of processed spectra
-        spectral_container: `ramanspy.SpectralContainer` containing all plotted spectra
-    '''
+        fig: plotly Figure
+        spectra_names: list of str, names of processed spectra in plot order
+        spectral_container: ramanspy.SpectralContainer with all plotted spectra
+    """
     spectra = process_spectra_from_dir(
         data_list, data_dir, x_to_plot, col_to_plot, rp_pipeline, include, subtract_id
     )
@@ -466,275 +346,26 @@ def plot_spectra_in_dir(data_list,
     spectral_container = rp.SpectralContainer.from_stack(list(spectra.values()))
     return fig, spectra_names, spectral_container
 
-def parse_wasatch_output(file_path):
-    """
-    Parse Wasatch spectrometer output file.
-    
-    The file format includes:
-    - Metadata section with key,value pairs
-    - Empty line separator
-    - Data section with header: Wavelength,Wavenumber,Processed,Raw,Dark
-    - Data rows with comma-separated values
-    
-    Parameters:
-        file_path (str): Path to the Wasatch CSV file
-        
-    Returns:
-        pd.DataFrame: DataFrame with columns ['Wavenumber', 'Intensity'] where
-                     Intensity comes from the 'Processed' column
-    """
-    metadata = {}
-    data_start = 0
-
-    
-    # Read the file line by line to extract metadata and identify where data starts
-    with open(file_path, 'r', encoding='utf-8') as file:
-        lines = file.readlines()
-
-    # Parse metadata
-    for i, line in enumerate(lines):
-        if line.strip() == "":  # End of metadata block
-            data_start = i + 1
-            break
-        if "," in line:
-            key, _, value = line.partition(",")
-            metadata[key.strip()] = value.strip()
-
-    # Load the data portion into a DataFrame
-    df = pd.read_csv(file_path, skiprows=data_start)
-
-    # Keep only columns present in POSSIBLE_WASATCH_COLUMNS
-    present_cols = [col for col in POSSIBLE_WASATCH_COLUMNS if col in df.columns]
-    df = df[present_cols]
-
-    # Rename Processed column to Intensity for compatibility
-    df.rename(columns={'Processed': 'Intensity'}, inplace=True)
-
-    # Remove columns that are all NaN (e.g. when "Dark" column is blank)
-    df.dropna(axis='columns', how='all', inplace=True)
-    # Remove rows with NaN values
-    df.dropna(axis='rows', how="any", inplace=True)
-
-    if not _is_like_spectrum(df):
-        print(f"Warning: {file_path} does not resemble a spectrum. Expected at least two numeric columns. Ignoring this file.")
-        return None
-    return df
-
-
-def parse_horiba_output(file_path):
-    """
-    Parse Horiba spectrometer output file.
-    
-    Files may have a header with metadata (denoted by #), followed by 2-column data (no column labels)
-    
-    Parameters:
-        file_path (str): Path to the Horiba file
-        
-    Returns:
-        pd.DataFrame: DataFrame with columns ['Wavenumber', 'Intensity']
-    """
-    def determine_sep(file_path):
-        path = Path(file_path)
-        ext = path.suffix.lower()
-        if ext == '.csv':
-            sep = ','
-        elif ext == '.tsv':
-            sep = '\t'
-        elif ext == '.txt':
-            sep = '\t'
-        else:
-            raise ValueError(f"Unsupported file extension: {ext}")
-        return sep
-
-    sep = determine_sep(file_path)
-    data_lines = []
-    metadata = {}
-    
-    with open(file_path, 'r', encoding='latin-1') as file:
-        for line in file:
-            if line.startswith("#"):
-                # Split metadata by "=" and strip any extra spaces or tabs
-                key_value = line[1:].split("=", 1)
-                if len(key_value) == 2:
-                    metadata[key_value[0].strip()] = key_value[1].strip()
-            else:
-                # Process non-metadata lines as data
-                split_line = line.strip().split(sep)
-                # if header line, skip
-                if split_line[0][0].isalpha():
-                    continue
-                if len(split_line) == 2:
-                    data_lines.append([float(split_line[0]), float(split_line[1])])
-
-    # Convert the data into a DataFrame
-    df = pd.DataFrame(data_lines, columns=["Wavenumber", "Intensity"])
-    if not _is_like_spectrum(df):
-        print(f"Warning: {file_path} does not resemble a spectrum. Expected at least two numeric columns. Ignoring this file.")
-        return None
-    return df
-
-
-def parse_openraman_output(file_path):
-    """
-    Parse OpenRaman output file.
-    
-    Parameters:
-        file_path (str): Path to the OpenRaman CSV file
-        
-    Returns:
-        pd.DataFrame: DataFrame with columns ['Wavenumber', 'Intensity']
-    """
-    df = pd.read_csv(file_path)
-    df.rename(columns={'Intensity (a.u.)': 'Intensity'}, inplace=True)
-    if not _is_like_spectrum(df):
-        print(f"Warning: {file_path} does not resemble a spectrum. Expected at least two numeric columns. Ignoring this file.")
-        return None
-    return df
 
 def parse_instantraman_output(file_path):
     """
-    Parse InstantRaman output file. Assuming no header and two columns: ['Pixel', 'Intensity'] but Pixel is actually Wavenumber.
-    
-    Parameters:
-        file_path (str): Path to the InstantRaman CSV file
-        
-    Returns:
-        pd.DataFrame: DataFrame with columns ['Pixel', 'Intensity']
+    Parse InstantRaman output CSV. Expects columns ['Pixel', 'Intensity'] where
+    Pixel is actually wavenumber (instrument firmware quirk).
     """
     df = pd.read_csv(file_path)
-    if 'Wavenumber' not in df.columns and 'Pixel' in df.columns:
-        # If Wavenumber column does not exist, rename 'Pixel' to 'Wavenumber'
+    if "Wavenumber" not in df.columns and "Pixel" in df.columns:
         print("Warning: 'Pixel' column found, renaming to 'Wavenumber'.")
-        df.rename(columns={'Pixel': 'Wavenumber'}, inplace=True)
+        df.rename(columns={"Pixel": "Wavenumber"}, inplace=True)
 
     if not _is_like_spectrum(df):
-        print(f"Warning: {file_path} does not resemble a spectrum. Expected at least two numeric columns. Ignoring this file.")
+        print(
+            f"Warning: {file_path} does not resemble a spectrum. "
+            "Expected at least two numeric columns. Ignoring this file."
+        )
         return None
     return df
 
+
 def _is_like_spectrum(df):
-    """
-    Heuristic to determine if a DataFrame resembles a spectrum.
-    Checks to make sure there are at least 2 numeric columns.
-    """
     numeric_cols = df.select_dtypes(include=[np.number]).columns
     return len(numeric_cols) >= 2
-    
-
-def parse_proteins_json(file_path):
-    """
-    Parse proteins.json file containing peak identification data.
-    
-    Parameters:
-        file_path (str): Path to the proteins.json file
-        
-    Returns:
-        dict: Dictionary with 'single' and 'range' keys containing peak data
-    """
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    return data
-
-
-def add_peak_annotations(fig,
-                         annotation_files = "proteins",
-                         y_range=None):
-    """
-    Add peak annotations to a plotly figure based on peak annotation data.
-    
-    Parameters:
-        fig (plotly.graph_objects.Figure): Plotly figure to annotate
-        annotation_files (str or list): Name(s) of annotation file(s) to parse. 
-                                       If string, will parse "../peak-ID/{name}.json"
-                                       If list, will parse all files in the list
-        y_range (tuple, optional): (y_min, y_max) for vertical lines and shaded areas
-        
-    Returns:
-        plotly.graph_objects.Figure: Updated figure with peak annotations
-    """
-
-    # Handle single string or list of annotation files
-    if isinstance(annotation_files, str):
-        annotation_files = [annotation_files]
-    
-    # Collect all annotations from specified files
-    all_protein_annotations = {}
-    for annotation_file in annotation_files:
-        annotation_dir = Path(ANNOTATION_FILE_DIR)
-        file_path = annotation_dir / (annotation_file + ".json")
-        try:
-            file_annotations = parse_proteins_json(file_path)
-            # Merge annotations, handling potential overlaps
-            for protein_type, peaks in file_annotations.items():
-                if protein_type in all_protein_annotations:
-                    # If protein type already exists, merge the peaks
-                    all_protein_annotations[protein_type].update(peaks)
-                else:
-                    all_protein_annotations[protein_type] = peaks
-        except FileNotFoundError:
-            print(f"Warning: Annotation file not found: {file_path}")
-        except Exception as e:
-            print(f"Warning: Error parsing annotation file {file_path}: {e}")
-    
-    if not all_protein_annotations:
-        print("Warning: No valid annotation files found or loaded")
-        return fig
-    # Get x-axis range from existing data
-    x_min = float('inf')
-    x_max = float('-inf')
-    for trace in fig.data:
-        if hasattr(trace, 'x') and trace.x is not None:
-            x_min = min(x_min, min(trace.x))
-            x_max = max(x_max, max(trace.x))
-    
-    if y_range is None:
-        # Get y-axis range from existing data
-        y_min = float('inf')
-        y_max = float('-inf')
-        for trace in fig.data:
-            if hasattr(trace, 'y') and trace.y is not None:
-                y_min = min(y_min, min(trace.y))
-                y_max = max(y_max, max(trace.y))
-        y_range = (y_min, y_max)
-    
-    # Process each protein type and its peaks
-    for protein_type, peaks in all_protein_annotations.items():
-        for freq_key in peaks.keys():
-            # Determine if this is a single frequency or range based on presence of "-"
-            if '-' in freq_key:
-                # Handle range - add shaded area
-                start, end = freq_key.split('-')
-                start_val = float(start)
-                end_val = float(end)
-
-                # Only add annotation if any part of the range overlaps with x-axis range
-                if start_val <= x_max and end_val >= x_min:
-                    # Clamp the range to the x-axis bounds
-                    range_start = max(start_val, x_min)
-                    range_end = min(end_val, x_max)
-
-                    fig.add_vrect(
-                        x0=range_start,
-                        x1=range_end,
-                        fillcolor="lightblue",
-                        opacity=0.2,
-                        layer="below",
-                        line_width=0,
-                        annotation_text=f"{protein_type}: {freq_key}",
-                        annotation_position="top inside",
-                        annotation_font_size=8
-                    )
-            else:
-                # Handle single frequency - add vertical line
-                freq_val = float(freq_key)
-                # Only add annotation if frequency is within the x-axis range
-                if x_min <= freq_val <= x_max:
-                    fig.add_vline(
-                        x=freq_val,
-                        line=dict(color='red', width=1, dash='dash'),
-                        annotation_text=f"{protein_type}: {freq_key}",
-                        annotation_position="top",
-                        annotation_font_size=8
-                    )
-
-    return fig
