@@ -1,3 +1,24 @@
-# 2026-Raman-Protein-Perturbation-Pub
+# Raman Protein Perturbation
 
-Analyses and code to generate figures from the pub "Applying Raman spectroscopy for protein analysis"
+Code and data for generating figures in "Applying Raman spectroscopy for protein analysis".
+
+
+## Running the notebooks
+
+We use [uv](https://docs.astral.sh/uv/) for package management. To reproduce the figures, download the codebase, install dependencies and launch Jupyter:
+
+```bash
+uv sync
+cd notebooks
+uv run jupyter lab
+```
+
+Run `notebooks/generate-raman-figures.ipynb` to reproduce Raman spectra in the figures. Figures are written to `plots/Raman/`
+
+Run `notebooks/generate-SEC-figures.ipynb` to reproduce SEC (size-exclusion chromatorgraphy) figures. Figures are written to `plots/SEC/`.
+
+## Raw data
+
+**Raman:** Raw data for all experiments is in `notebooks/data/raman-chemical-perturbations` and `notebooks/data/raman-ph-perturbations`. InstantRaman CSV files organized by date and condition. Each experiment directory contains a `sample_table.csv` mapping filenames to sample names and group IDs for coloring.
+
+**SEC:** Raw tab-separated CSVs (one per condition per protein). `generate-SEC-figures.ipynb` normalizes these to Excel first, then plots.
