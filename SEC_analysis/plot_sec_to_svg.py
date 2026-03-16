@@ -13,7 +13,6 @@ from typing import Any, List, Optional
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import font_manager
 import pandas as pd
 import arcadia_pycolor as apc
 
@@ -29,24 +28,15 @@ elif (_SCRIPT_DIR / "data").is_dir():
 else:
     INPUT_DIR = _SCRIPT_DIR / "Final SEC figures "
     OUTPUT_DIR = _SCRIPT_DIR / "SEC_figures_SVG"
-FONT_DIR = _SCRIPT_DIR / "Atkinson_Hyperlegible"
 
-# Ensure Atkinson Hyperlegible is available to matplotlib (from project folder)
-if FONT_DIR.is_dir():
-    for _f in sorted(FONT_DIR.glob("*.ttf")):
-        font_manager.fontManager.addfont(str(_f))
-
-# * No perturbation: Chateau (b9afa7)
-# * TCEP: Canary (f7b846)
-# * EDTA: Aegean (5088c5)
-# * Both: Seaweed (3b9886)
 COLOR_NOPERTURBATION = apc.chateau
 COLOR_TCEP = apc.canary
 COLOR_EDTA = apc.aegean
-COLOR_BOTH = apc.seaweed
+COLOR_BOTH = apc.lime
 COLOR_GRAY = apc.bark
 BLACK = "#000000"
 LINE_COLORS = [COLOR_NOPERTURBATION, COLOR_TCEP, COLOR_EDTA, COLOR_BOTH]
+FONT_TICKS_FONTSIZE = 14.5
 
 # Legend order by suffix (same on every plot)
 SUFFIX_ORDER = ("_standards", "_standard", "_TCEP", "_EDTA", "_TCEP_EDTA")
@@ -102,12 +92,6 @@ def _protein_display(label: str) -> str:
             return full[: -len(suffix)].strip()
     return full
 
-# Typography: Atkinson Hyperlegible (Style Guide); fallback if not installed
-# FONT_FAMILY = ["Atkinson Hyperlegible", "Atkinson Hyperlegible Next", "sans-serif"]
-# FONT_TITLE = {"fontsize": 14, "fontweight": "bold", "color": BLACK}
-# FONT_AXES = {"fontsize": 12, "color": BLACK}
-# FONT_TICKS = {"fontsize": 10, "color": BLACK}
-# FONT_LEGEND = {"size": 10, "color": BLACK}
 
 
 def get_series_pairs(df: pd.DataFrame):
@@ -186,7 +170,6 @@ def suggest_legend(pairs: list[tuple]) -> tuple[str, list[str]]:
 
 def render_sec_svg(
     pairs: list,
-    title: str,
     legend_title: Optional[str] = None,
     legend_labels: Optional[List[str]] = None,
 ) -> str:
@@ -212,8 +195,8 @@ def render_sec_svg(
         ax.plot(x, y, color=color, label=leg_label, linewidth=2)
     ax.set_xlabel("Volume (mL)")
     ax.set_ylabel("Normalised UV Absorbance")
-    ax.tick_params(axis="both", colors=BLACK)
-    leg = ax.legend(
+    ax.tick_params(axis="both", labelsize=FONT_TICKS_FONTSIZE)
+    ax.legend(
         loc="upper left",
         bbox_to_anchor=(1.02, 1.0),
         frameon=False,
@@ -221,17 +204,14 @@ def render_sec_svg(
         borderaxespad=0.0,
         alignment="left",
     )
-    leg.get_title().set_color(BLACK)
-    for t in leg.get_texts():
-        t.set_color(BLACK)
+
     apc.mpl.style_plot(ax)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    leg.get_title().set_color(BLACK)
+
     fig.tight_layout()
-    buf = io.StringIO()
-    fig.savefig(buf, format="svg", bbox_inches="tight")
     fig.show()
+    return fig
 
 
 
