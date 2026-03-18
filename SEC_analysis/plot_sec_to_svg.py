@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-COLOR_NOPERTURBATION = apc.chateau
-COLOR_TCEP = apc.canary
-COLOR_EDTA = apc.aegean
+COLOR_NOPERTURBATION = apc.taupe
+COLOR_TCEP = apc.vital
+COLOR_EDTA = apc.aster
 COLOR_BOTH = apc.lime
 LINE_COLORS = [COLOR_NOPERTURBATION, COLOR_TCEP, COLOR_EDTA, COLOR_BOTH]
 FONT_TICKS_FONTSIZE = 14.5
