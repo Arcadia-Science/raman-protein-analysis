@@ -22,3 +22,5 @@ Run `notebooks/generate-SEC-figures.ipynb` to reproduce SEC (size-exclusion chro
 **Raman:** Raw data for all experiments is in `notebooks/data/raman-chemical-perturbations` and `notebooks/data/raman-ph-perturbations`. InstantRaman CSV files organized by date and condition. Each experiment directory contains a `sample_table.csv` mapping filenames to sample names and group IDs for coloring.
 
 **SEC:** Raw tab-separated CSVs (one per condition per protein). `generate-SEC-figures.ipynb` normalizes these to Excel first, then plots.
+
+The raw data used in each figure is shown [here](experiment-sample-map.md).
