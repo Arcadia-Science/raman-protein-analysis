@@ -164,37 +164,3 @@
 | rep1/BSA+TCEP pH 12   | proteins/D5-Site_0.csv  | buffers/B5-Site_0.csv  |
 | rep1/BSA+TCEP pH 12.7 | proteins/D4-Site_0.csv  | buffers/B4-Site_0.csv  |
 
-## Figure 18
-
-| Protein experiment   | Protein filename        | Buffer filename         |
-|:---------------------|:------------------------|:------------------------|
-| rep1/BSA pH 0.3      | proteins/A2-Site_0.csv  | proteins/C2-Site_0.csv  |
-| rep1/BSA pH 1        | proteins/A3-Site_0.csv  | proteins/C3-Site_0.csv  |
-| rep1/BSA pH 1.3      | proteins/A4-Site_0.csv  | proteins/C4-Site_0.csv  |
-| rep1/BSA pH 2        | proteins/A5-Site_0.csv  | proteins/C5-Site_0.csv  |
-| rep1/BSA pH 2.3      | proteins/A6-Site_0.csv  | proteins/C6-Site_0.csv  |
-| rep1/BSA pH 3        | proteins/A7-Site_0.csv  | proteins/C7-Site_0.csv  |
-| rep1/BSA pH 7.5      | proteins/A12-Site_0.csv | proteins/C12-Site_0.csv |
-| rep1/BSA pH 8        | proteins/E12-Site_0.csv | proteins/C12-Site_0.csv |
-| rep1/BSA pH 9        | proteins/E11-Site_0.csv | proteins/C12-Site_0.csv |
-| rep1/BSA pH 9.5      | proteins/E10-Site_0.csv | proteins/C12-Site_0.csv |
-| rep1/BSA pH 12       | proteins/E5-Site_0.csv  | proteins/F5-Site_0.csv  |
-| rep1/BSA pH 12.7     | proteins/E4-Site_0.csv  | proteins/F4-Site_0.csv  |
-
-## Figure 19
-
-| Protein experiment    | Protein filename        | Buffer filename        |
-|:----------------------|:------------------------|:-----------------------|
-| rep1/BSA+TCEP pH 0.3  | proteins/B2-Site_0.csv  | buffers/A2-Site_0.csv  |
-| rep1/BSA+TCEP pH 1    | proteins/B3-Site_0.csv  | buffers/A3-Site_0.csv  |
-| rep1/BSA+TCEP pH 1.3  | proteins/B4-Site_0.csv  | buffers/A4-Site_0.csv  |
-| rep1/BSA+TCEP pH 2    | proteins/B5-Site_0.csv  | buffers/A5-Site_0.csv  |
-| rep1/BSA+TCEP pH 2.3  | proteins/B6-Site_0.csv  | buffers/A6-Site_0.csv  |
-| rep1/BSA+TCEP pH 3    | proteins/B7-Site_0.csv  | buffers/A7-Site_0.csv  |
-| rep1/BSA+TCEP pH 7.5  | proteins/B12-Site_0.csv | buffers/A12-Site_0.csv |
-| rep1/BSA+TCEP pH 8    | proteins/D12-Site_0.csv | buffers/B12-Site_0.csv |
-| rep1/BSA+TCEP pH 9    | proteins/D11-Site_0.csv | buffers/B11-Site_0.csv |
-| rep1/BSA+TCEP pH 9.5  | proteins/D10-Site_0.csv | buffers/B10-Site_0.csv |
-| rep1/BSA+TCEP pH 12   | proteins/D5-Site_0.csv  | buffers/B5-Site_0.csv  |
-| rep1/BSA+TCEP pH 12.7 | proteins/D4-Site_0.csv  | buffers/B4-Site_0.csv  |
-
