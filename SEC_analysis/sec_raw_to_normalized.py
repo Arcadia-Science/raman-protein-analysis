@@ -168,6 +168,16 @@ SEC_PROTEIN_CONFIG = [
             ("Hemoglobin_TCEP_EDTA", "Hemoglobin_TCEP_EDTA"),
         ],
     ),
+    (
+        "IgG_raw_data",
+        "IgG_curves_normalized.xlsx",
+        [
+            ("IgG standard", "IgG_standard"),
+            ("IgG_TCEP ", "IgG_TCEP"),  # trailing space distinguishes from IgG_TCEP_EDTA
+            ("IgG EDTA", "IgG_EDTA"),
+            ("IgG_TCEP_EDTA", "IgG_TCEP_EDTA"),
+        ],
+    ),
 ]
 
 
