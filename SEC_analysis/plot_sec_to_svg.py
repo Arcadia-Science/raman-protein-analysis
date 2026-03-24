@@ -109,15 +109,29 @@ def render_sec_svg(
     pairs: list,
     legend_title: str | None = None,
     legend_labels: list[str] | None = None,
+    xlim: tuple[float, float] | None = None,
 ) -> plt.Figure:
     """
     Render SEC curves. pairs = [(x, y, label, peak_vol, peak_y_val), ...].
     legend_title and legend_labels are auto-computed from series names if not provided.
+    If xlim=(left, right) is given, data is clipped to that range and y is re-normalized
+    within that window so the visible peak reaches 1.0.
     Returns a matplotlib Figure.
     """
     if not pairs:
         raise ValueError("No series to plot")
     pairs = sorted(pairs, key=_sort_key_for_legend)
+    if xlim is not None:
+        clipped = []
+        for x, y, label, _peak_vol, _peak_y_val in pairs:
+            mask = (x >= xlim[0]) & (x <= xlim[1])
+            x_c, y_c = x[mask], y[mask]
+            lo, hi = np.nanmin(y_c), np.nanmax(y_c)
+            if hi > lo:
+                y_c = (y_c - lo) / (hi - lo)
+            peak_idx = np.argmax(y_c)
+            clipped.append((x_c, y_c, label, float(x_c[peak_idx]), float(y_c[peak_idx])))
+        pairs = clipped
     if legend_title is None:
         legend_title = _protein_display(pairs[0][2])
     computed_labels = [
@@ -142,6 +156,8 @@ def render_sec_svg(
             else f"{_condition_display(label)} ({peak_vol:.2f} mL)"
         )
         ax.plot(x, y, color=color, label=leg_label, linewidth=2)
+    if xlim is not None:
+        ax.set_xlim(xlim)
     ax.set_xlabel("Volume (mL)")
     ax.set_ylabel("Normalised UV Absorbance")
     ax.tick_params(axis="both", labelsize=FONT_TICKS_FONTSIZE)
