@@ -115,22 +115,13 @@ def raw_folder_to_data_sheet(
     return build_data_sheet(runs, volume_min=volume_min, volume_max=volume_max, n_points=n_points)
 
 
-def write_normalized_excel(
-    data_df: pd.DataFrame,
-    output_path: Path,
-    sheet_name: str = "Data",
-) -> None:
-    """Write DataFrame to Excel as the Data sheet."""
-    data_df.to_excel(output_path, sheet_name=sheet_name, index=False)
-
-
-# Config for all proteins: (raw_folder_name, output_xlsx_filename, file_to_condition).
+# Config for all proteins: (raw_folder_name, output_stem, file_to_condition).
 # Raw folders live inside the SEC data directory (e.g. data/SEC/BSA_raw_data).
 # file_to_condition: list of (filename_substring, condition_name).
 SEC_PROTEIN_CONFIG = [
     (
         "BSA_raw_data",
-        "bsa_curves_normalized.xlsx",
+        "bsa_curves_normalized",
         [
             ("TCEP and buffer", "BSA_TCEP"),
             ("2026_02_20 BSA  001", "BSA_standards"),
@@ -140,7 +131,7 @@ SEC_PROTEIN_CONFIG = [
     ),
     (
         "DNase_raw_data",
-        "DNAse_curves_normalized.xlsx",
+        "DNAse_curves_normalized",
         [
             ("DNAse  001", "DNAse I standard"),
             ("DNAse_TCEP", "DNAse I_TCEP"),
@@ -150,7 +141,7 @@ SEC_PROTEIN_CONFIG = [
     ),
     (
         "CytC_raw_data",
-        "Cyt_C_curves_normalized.xlsx",
+        "Cyt_C_curves_normalized",
         [
             ("CytochromeC standard", "Cyt_C_standard"),
             ("CytochromeC_TCEP", "Cyt_C_TCEP"),
@@ -160,7 +151,7 @@ SEC_PROTEIN_CONFIG = [
     ),
     (
         "Hemoglobin_raw_data",
-        "Hemo_curves_normalized (2).xlsx",
+        "Hemo_curves_normalized",
         [
             ("hemoglobin commercial", "Hemoglobin_standard"),
             ("Hemoglobin TCEP", "Hemoglobin_TCEP"),
@@ -170,7 +161,7 @@ SEC_PROTEIN_CONFIG = [
     ),
     (
         "IgG_raw_data",
-        "IgG_curves_normalized.xlsx",
+        "IgG_curves_normalized",
         [
             ("IgG standard", "IgG_standard"),
             ("IgG_TCEP ", "IgG_TCEP"),  # trailing space distinguishes from IgG_TCEP_EDTA
@@ -183,19 +174,17 @@ SEC_PROTEIN_CONFIG = [
 
 def run_all_proteins(
     sec_data_dir: Path,
-    output_dir: Path,
     volume_min: float = 0.1,
     volume_max: float = 25.0,
     n_points: int = 299,
-) -> None:
+) -> dict[str, pd.DataFrame]:
     """
-    Build normalized Excel Data sheets for all proteins in SEC_PROTEIN_CONFIG.
+    Build normalized Data DataFrames for all proteins in SEC_PROTEIN_CONFIG.
     sec_data_dir: path to folder containing BSA_raw_data, DNAse_raw_data, etc.
-    output_dir: where to write the .xlsx files.
+    Returns a dict mapping each protein's stem name to its Data DataFrame.
     """
-    output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    for raw_folder, out_name, mapping in SEC_PROTEIN_CONFIG:
+    result = {}
+    for raw_folder, stem, mapping in SEC_PROTEIN_CONFIG:
         raw_dir = Path(sec_data_dir) / raw_folder
         if not raw_dir.is_dir():
             print(f"  Skip {raw_folder}: not a directory")
@@ -204,10 +193,9 @@ def run_all_proteins(
             df = raw_folder_to_data_sheet(
                 raw_dir, mapping, volume_min=volume_min, volume_max=volume_max, n_points=n_points
             )
-            out_path = output_dir / out_name
-            write_normalized_excel(df, out_path, sheet_name="Data")
-            print(f"  Wrote {out_path.name}")
+            result[stem] = df
         except FileNotFoundError as e:
             print(f"  Skip {raw_folder}: {e}")
         except Exception as e:
             print(f"  Error {raw_folder}: {e}")
+    return result
