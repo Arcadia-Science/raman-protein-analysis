@@ -5,13 +5,7 @@ Code and data for generating figures in "Applying Raman spectroscopy for protein
 
 ## Running the notebooks
 
-We use [uv](https://docs.astral.sh/uv/) for package management. To reproduce the figures, download the codebase, install dependencies and launch Jupyter:
-
-```bash
-uv sync
-cd notebooks
-uv run jupyter lab
-```
+We use [uv](https://docs.astral.sh/uv/) for package management. To reproduce the figures, download the codebase, install dependencies launch the notebooks within `/notebooks`.
 
 Run `notebooks/generate-raman-figures.ipynb` to reproduce Raman spectra in the figures. Figures are written to `plots/Raman/`
 

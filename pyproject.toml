@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
-    { name = "Your Name", email = "your.email@example.com" }
+    { name = "Ilya Kolb", email = "ilya.kolb.0@gmail.com" }
 ]
 keywords = ["raman", "spectroscopy", "analysis", "sec", "protein"]
 classifiers = [
@@ -18,17 +18,17 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
 ]
 dependencies = [
-    "arcadia-pycolor>=0.7.2",
-    "ipykernel>=7.2.0",
-    "matplotlib>=3.7.0",
-    "nbformat>=5.10.4",
-    "numpy>=1.24.0",
-    "openpyxl>=3.1.5",
-    "pandas>=1.5.0",
-    "plotly>=5.0.0",
-    "ramanspy>=0.2.0",
-    "scipy>=1.10.0",
-    "tabulate>=0.10.0",
+    "arcadia-pycolor==0.7.2",
+    "ipykernel==7.2.0",
+    "matplotlib==3.10.8",
+    "nbformat==5.10.4",
+    "numpy==2.4.3",
+    "openpyxl==3.1.5",
+    "pandas==3.0.1",
+    "plotly==6.6.0",
+    "ramanspy==0.2.10",
+    "scipy==1.17.1",
+    "tabulate==0.10.0",
 ]
 
 [tool.setuptools.packages.find]
