@@ -1,4 +1,4 @@
-# Raman Protein Perturbation
+# Analyzing protein perturbations with Raman spectroscopy
 
 Code and data for generating figures in the 2026 Arcadia Science pub titled ["Spontaneous Raman spectroscopy detects chemical perturbation of protein structure"](https://doi.org/10.57844/arcadia-f4fe-ep62).
 

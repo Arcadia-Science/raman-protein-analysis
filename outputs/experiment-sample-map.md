@@ -1,4 +1,4 @@
-## Figure 1
+## Figure 1 (BSA, 10 mg/ml)
 
 | Protein experiment                    | Protein filename         | Buffer filename           |
 |:--------------------------------------|:-------------------------|:--------------------------|
@@ -6,7 +6,18 @@
 | 2025-12-13/BSA [10 mgml] in Tris+EDTA | 2025-12-13/B2-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/BSA [10 mgml] in Tris+TCEP | 2025-12-13/C2-Site_0.csv | 2025-12-13/B11-Site_0.csv |
 
-## Figure 2
+#### SEC data for BSA
+
+| Filename                                              |
+|:------------------------------------------------------|
+| 2026_02_20 BSA  001.csv                               |
+| 2026_02_26 BSA_TCEP_EDTA 002.csv                      |
+| 2026_02_25 BSA_EDTA 001.csv                           |
+| 2026_02_20 BSA with TCEP and buffer with TCEP 001.csv |
+
+---
+
+## Supporting figure (FAF-BSA, 10 mg/ml)
 
 | Protein experiment                        | Protein filename         | Buffer filename           |
 |:------------------------------------------|:-------------------------|:--------------------------|
@@ -14,7 +25,9 @@
 | 2025-12-13/FAF-BSA [10 mgml] in Tris+TCEP | 2025-12-13/B4-Site_0.csv | 2025-12-13/B11-Site_0.csv |
 | 2025-12-13/FAF-BSA [10 mgml] in Tris+EDTA | 2025-12-13/C4-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 
-## Figure 3
+---
+
+## Figure 2 (DNAse I, 12.5 mg/ml)
 
 | Protein experiment                             | Protein filename         | Buffer filename          |
 |:-----------------------------------------------|:-------------------------|:-------------------------|
@@ -23,7 +36,18 @@
 | 2025-12-10/DNAse [12.5 mgml] in Tris+EDTA      | 2025-12-10/C8-Site_0.csv | 2025-12-10/C1-Site_0.csv |
 | 2025-12-10/DNAse [12.5 mgml] in Tris+TCEP+EDTA | 2025-12-10/D8-Site_0.csv | 2025-12-10/D1-Site_0.csv |
 
-## Figure 4
+#### SEC data for DNase
+
+| Filename                          |
+|:----------------------------------|
+| 2026_02_26 DNase_TCE_EDTA 001.csv |
+| 2026_02_24 DNAse_TCEP  001.csv    |
+| 2026_02_23 DNAse  001.csv         |
+| 2026_02_25 DNase_EDTA 2 001.csv   |
+
+---
+
+## Figure 3 (Cytochrome C, 10 mg/ml)
 
 | Protein experiment                          | Protein filename          | Buffer filename           |
 |:--------------------------------------------|:--------------------------|:--------------------------|
@@ -32,7 +56,18 @@
 | 2025-12-13/CytC [10 mgml] in Tris+EDTA      | 2025-12-13/C10-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/CytC [10 mgml] in Tris+TCEP+EDTA | 2025-12-13/D10-Site_0.csv | 2025-12-13/D11-Site_0.csv |
 
-## Figure 5
+#### SEC data for CytC
+
+| Filename                                 |
+|:-----------------------------------------|
+| 2026_02_23 CytochromeC standard  001.csv |
+| 2026_02_27 CytochromeC_TCEP_EDTA 001.csv |
+| 2026_02_25 CytochromeC_EDTA 001.csv      |
+| 2026_02_24 CytochromeC_TCEP  001.csv     |
+
+---
+
+## Supporting Figure (BSA, 3 mg/ml)
 
 | Protein experiment                        | Protein filename         | Buffer filename           |
 |:------------------------------------------|:-------------------------|:--------------------------|
@@ -41,7 +76,9 @@
 | 2025-12-13/BSA [3 mgml] in Tris+EDTA      | 2025-12-13/C1-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/BSA [3 mgml] in Tris+TCEP+EDTA | 2025-12-13/D1-Site_0.csv | 2025-12-13/D11-Site_0.csv |
 
-## Figure 6
+---
+
+## Supporting Figure (FAF-BSA, 3 mg/ml)
 
 | Protein experiment                            | Protein filename         | Buffer filename           |
 |:----------------------------------------------|:-------------------------|:--------------------------|
@@ -50,7 +87,9 @@
 | 2025-12-13/FAF-BSA [3 mgml] in Tris+EDTA      | 2025-12-13/C3-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/FAF-BSA [3 mgml] in Tris+TCEP+EDTA | 2025-12-13/D3-Site_0.csv | 2025-12-13/D11-Site_0.csv |
 
-## Figure 7
+---
+
+## Supporting Figure (Trypsin, 3 mg/ml)
 
 | Protein experiment                            | Protein filename         | Buffer filename           |
 |:----------------------------------------------|:-------------------------|:--------------------------|
@@ -59,7 +98,9 @@
 | 2025-12-13/Trypsin [3 mgml] in Tris+EDTA      | 2025-12-13/C5-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/Trypsin [3 mgml] in Tris+TCEP+EDTA | 2025-12-13/D5-Site_0.csv | 2025-12-13/D11-Site_0.csv |
 
-## Figure 8
+---
+
+## Supporting Figure (Trypsin, 10 mg/ml)
 
 | Protein experiment                             | Protein filename         | Buffer filename           |
 |:-----------------------------------------------|:-------------------------|:--------------------------|
@@ -68,7 +109,9 @@
 | 2025-12-13/Trypsin [10 mgml] in Tris+EDTA      | 2025-12-13/C6-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/Trypsin [10 mgml] in Tris+TCEP+EDTA | 2025-12-13/D6-Site_0.csv | 2025-12-13/D11-Site_0.csv |
 
-## Figure 9
+---
+
+## Supporting Figure (Hemoglobin, 3 mg/ml)
 
 | Protein experiment                               | Protein filename         | Buffer filename           |
 |:-------------------------------------------------|:-------------------------|:--------------------------|
@@ -77,7 +120,9 @@
 | 2025-12-13/Hemoglobin [3 mgml] in Tris+EDTA      | 2025-12-13/C7-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/Hemoglobin [3 mgml] in Tris+TCEP+EDTA | 2025-12-13/D7-Site_0.csv | 2025-12-13/D11-Site_0.csv |
 
-## Figure 10
+---
+
+## Supporting Figure (Hemoglobin, 10 mg/ml)
 
 | Protein experiment                                | Protein filename         | Buffer filename           |
 |:--------------------------------------------------|:-------------------------|:--------------------------|
@@ -86,7 +131,18 @@
 | 2025-12-13/Hemoglobin [10 mgml] in Tris+EDTA      | 2025-12-13/C8-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/Hemoglobin [10 mgml] in Tris+TCEP+EDTA | 2025-12-13/D8-Site_0.csv | 2025-12-13/D11-Site_0.csv |
 
-## Figure 11
+#### SEC data for Hemoglobin
+
+| Filename                                  |
+|:------------------------------------------|
+| 2026_02_26 Hemoglobin_TCEP_EDTA 001.csv   |
+| 2026_02_24 Hemoglobin TCEP  001.csv       |
+| 2026_02_25 Hemoglobin_EDTA 001.csv        |
+| 2026_02_23 hemoglobin commercial  001.csv |
+
+---
+
+## Supporting Figure (Cytochrome C, 3 mg/ml)
 
 | Protein experiment                         | Protein filename         | Buffer filename           |
 |:-------------------------------------------|:-------------------------|:--------------------------|
@@ -95,7 +151,9 @@
 | 2025-12-13/CytC [3 mgml] in Tris+EDTA      | 2025-12-13/C9-Site_0.csv | 2025-12-13/C11-Site_0.csv |
 | 2025-12-13/CytC [3 mgml] in Tris+TCEP+EDTA | 2025-12-13/D9-Site_0.csv | 2025-12-13/D11-Site_0.csv |
 
-## Figure 12
+---
+
+## Supporting Figure (BSA 10 mg/ml, replicate)
 
 | Protein experiment                    | Protein filename         | Buffer filename          |
 |:--------------------------------------|:-------------------------|:-------------------------|
@@ -103,7 +161,9 @@
 | 2025-12-10/BSA (10 mgml) in Tris+TCEP | 2025-12-10/B2-Site_0.csv | 2025-12-10/B1-Site_0.csv |
 | 2025-12-10/BSA (10 mgml) in Tris+EDTA | 2025-12-10/C2-Site_0.csv | 2025-12-10/C1-Site_0.csv |
 
-## Figure 13
+---
+
+## Supporting Figure (BSA 3 mg/ml, replicate)
 
 | Protein experiment                        | Protein filename         | Buffer filename          |
 |:------------------------------------------|:-------------------------|:-------------------------|
@@ -112,7 +172,9 @@
 | 2025-12-10/BSA (3 mgml) in Tris+EDTA      | 2025-12-10/C3-Site_0.csv | 2025-12-10/C1-Site_0.csv |
 | 2025-12-10/BSA (3 mgml) in Tris+TCEP+EDTA | 2025-12-10/D3-Site_0.csv | 2025-12-10/D1-Site_0.csv |
 
-## Figure 14
+---
+
+## Supporting Figure (IgG 8.6 mg/ml)
 
 | Protein experiment                          | Protein filename          | Buffer filename          |
 |:--------------------------------------------|:--------------------------|:-------------------------|
@@ -121,7 +183,18 @@
 | 2025-12-10/IgG [8.6 mgml] in Tris+EDTA      | 2025-12-10/C10-Site_0.csv | 2025-12-10/C1-Site_0.csv |
 | 2025-12-10/IgG [8.6 mgml] in Tris+TCEP+EDTA | 2025-12-10/D10-Site_0.csv | 2025-12-10/D1-Site_0.csv |
 
-## Figure 15
+#### SEC data for IgG
+
+| Filename                         |
+|:---------------------------------|
+| 2026_02_26 IgG_TCEP_EDTA 001.csv |
+| 2026_02_27 IgG standard 001.csv  |
+| 2026_02_27 IgG_TCEP 001.csv      |
+| 2026_02_26 IgG EDTA 001.csv      |
+
+---
+
+## Supporting Figure (Buffers)
 
 | Protein experiment        | Protein filename         | Buffer filename   |
 |:--------------------------|:-------------------------|:------------------|
@@ -130,7 +203,9 @@
 | 2025-12-10/Tris+EDTA      | 2025-12-10/C1-Site_0.csv |                   |
 | 2025-12-10/Tris+TCEP+EDTA | 2025-12-10/D1-Site_0.csv |                   |
 
-## Figure 16
+---
+
+## Figure 4 (BSA pH perturbation)
 
 | Protein experiment   | Protein filename        | Buffer filename         |
 |:---------------------|:------------------------|:------------------------|
@@ -147,7 +222,9 @@
 | rep1/BSA pH 12       | proteins/E5-Site_0.csv  | proteins/F5-Site_0.csv  |
 | rep1/BSA pH 12.7     | proteins/E4-Site_0.csv  | proteins/F4-Site_0.csv  |
 
-## Figure 17
+---
+
+## Figure 5 (BSA+TCEP pH perturbation)
 
 | Protein experiment    | Protein filename        | Buffer filename        |
 |:----------------------|:------------------------|:-----------------------|
@@ -163,4 +240,6 @@
 | rep1/BSA+TCEP pH 9.5  | proteins/D10-Site_0.csv | buffers/B10-Site_0.csv |
 | rep1/BSA+TCEP pH 12   | proteins/D5-Site_0.csv  | buffers/B5-Site_0.csv  |
 | rep1/BSA+TCEP pH 12.7 | proteins/D4-Site_0.csv  | buffers/B4-Site_0.csv  |
+
+---
 
