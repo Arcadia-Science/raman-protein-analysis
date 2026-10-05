@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-COLOR_NOPERTURBATION = apc.taupe
+COLOR_NOPERTURBATION = apc.black
 COLOR_TCEP = apc.vital
 COLOR_EDTA = apc.aster
 COLOR_BOTH = apc.lime
